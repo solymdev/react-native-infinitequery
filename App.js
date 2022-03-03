@@ -9,7 +9,6 @@
 import React from 'react';
 import type {Node} from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -20,6 +19,9 @@ import {
 
 import {QueryClient, QueryClientProvider, useQuery} from 'react-query';
 import MainPage from './screens/MainPage';
+import DetailPage from './screens/DetailPage';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
 import {
   Colors,
@@ -30,32 +32,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 const queryClient = new QueryClient();
-
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+const Stack = createStackNavigator();
 
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -66,7 +43,12 @@ const App: () => Node = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <MainPage />
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Star Wars Wiki" component={MainPage} />
+          <Stack.Screen name="Detail" component={DetailPage} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </QueryClientProvider>
   );
 };

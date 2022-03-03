@@ -16,9 +16,13 @@ import {
   Text,
   useColorScheme,
   View,
+  FlatList,
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 
 import {useQuery} from 'react-query';
+import {List} from 'react-native-paper';
 
 import {
   Colors,
@@ -54,12 +58,10 @@ const Section = ({children, title}): Node => {
   );
 };
 
-const MainPage: () => Node = () => {
+const MainPage: () => Node = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
   const {isLoading, error, data} = useQuery('repoData', () =>
-    fetch('https://api.github.com/repos/tannerlinsley/react-query').then(res =>
-      res.json(),
-    ),
+    fetch('https://swapi.dev/api/people/').then(res => res.json()),
   );
 
   if (isLoading) {
@@ -75,33 +77,29 @@ const MainPage: () => Node = () => {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <View
+        style={{
+          backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        }}>
+        <FlatList
+          data={data.results}
+          keyExtractor={item => item.created + 'i'}
+          renderItem={({item}) => (
+            <>
+              <List.Item
+                button
+                title={item.name}
+                description={item.name}
+                onPress={() => navigation.navigate('Detail')}
+                left={props => <List.Icon {...props} icon="folder" />}
+              />
+            </>
+          )}
+        />
+      </View>
+    </>
   );
 };
 
