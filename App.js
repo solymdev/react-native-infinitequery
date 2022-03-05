@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import type {Node} from 'react';
+import type { Node } from 'react';
 import {
   ScrollView,
   StatusBar,
@@ -17,11 +17,11 @@ import {
   View,
 } from 'react-native';
 
-import {QueryClient, QueryClientProvider, useQuery} from 'react-query';
+import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
 import MainPage from './screens/MainPage';
 import DetailPage from './screens/DetailPage';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import {
   Colors,

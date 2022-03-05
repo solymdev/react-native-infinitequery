@@ -6,8 +6,8 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import type {Node} from 'react';
+import React, { useState } from 'react';
+import type { Node } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -21,8 +21,8 @@ import {
   Image,
 } from 'react-native';
 
-import {useQuery} from 'react-query';
-import {List} from 'react-native-paper';
+import { useQuery, useInfiniteQuery } from 'react-query';
+import { List } from 'react-native-paper';
 
 import {
   Colors,
@@ -32,49 +32,46 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+import warsAPI from '../api';
 
-const MainPage: () => Node = ({navigation}) => {
+const MainPage: () => Node = ({ navigation }) => {
   const isDarkMode = useColorScheme() === 'dark';
-  const {isLoading, error, data} = useQuery('repoData', () =>
-    fetch('https://swapi.dev/api/people/').then(res => res.json()),
-  );
+
+  const { isLoading, data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useInfiniteQuery('repo', warsAPI.fetchCharacters, {
+      getNextPageParam: lastPage => {
+        if (lastPage.next !== null) {
+          console.log('next:' + lastPage.next);
+          return lastPage.next;
+        }
+        return lastPage;
+      },
+    });
+
+  const extractorKey = (item, index) => {
+    return index.toString();
+  };
+
+  const loadMore = () => {
+    console.log('toload...');
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
 
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
 
-  if (error) {
-    return <Text>Error: {error.message}</Text>;
-  }
-
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  const renderSpinner = () => {
+    return <Text>Loading...</Text>;
+  };
+
+  console.log('data;' + Object.keys(data));
 
   return (
     <>
@@ -84,15 +81,18 @@ const MainPage: () => Node = ({navigation}) => {
           backgroundColor: isDarkMode ? Colors.black : Colors.white,
         }}>
         <FlatList
-          data={data.results}
-          keyExtractor={item => item.created + 'i'}
-          renderItem={({item}) => (
+          data={data.pages.map(page => page.results).flat()}
+          keyExtractor={extractorKey}
+          onEndReachedThreshold={0.3}
+          onEndReached={loadMore}
+          renderItem={({ item }) => (
             <>
               <List.Item
                 button
                 title={item.name}
                 description={item.name}
                 onPress={() => navigation.navigate('Detail')}
+                ListFooterComponent={isFetchingNextPage ? renderSpinner : null}
                 left={props => <List.Icon {...props} icon="folder" />}
               />
             </>
