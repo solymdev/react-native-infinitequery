@@ -23,7 +23,6 @@ import { useQuery } from 'react-query';
 import {
   Colors,
   DebugInstructions,
-  Header,
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
@@ -65,7 +64,6 @@ const DetailPage: () => Node = () => {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={backgroundStyle}>
-      <Header />
       <View
         style={{
           backgroundColor: isDarkMode ? Colors.black : Colors.white,

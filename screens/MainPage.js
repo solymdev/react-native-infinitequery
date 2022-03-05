@@ -17,15 +17,13 @@ import {
   useColorScheme,
   View,
   FlatList,
-  ActivityIndicator,
   Image,
 } from 'react-native';
 
 import { useQuery, useInfiniteQuery } from 'react-query';
-import { List } from 'react-native-paper';
+import { List, Colors, ActivityIndicator } from 'react-native-paper';
 
 import {
-  Colors,
   DebugInstructions,
   Header,
   LearnMoreLinks,
@@ -60,7 +58,11 @@ const MainPage: () => Node = ({ navigation }) => {
   };
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
   }
 
   const backgroundStyle = {
@@ -68,7 +70,7 @@ const MainPage: () => Node = ({ navigation }) => {
   };
 
   const renderSpinner = () => {
-    return <Text>Loading...</Text>;
+    return <ActivityIndicator />;
   };
 
   console.log('data;' + Object.keys(data));
@@ -90,10 +92,14 @@ const MainPage: () => Node = ({ navigation }) => {
               <List.Item
                 button
                 title={item.name}
-                description={item.name}
                 onPress={() => navigation.navigate('Detail')}
                 ListFooterComponent={isFetchingNextPage ? renderSpinner : null}
-                left={props => <List.Icon {...props} icon="folder" />}
+                left={props => (
+                  <List.Icon color={Colors.blue500} icon="account" />
+                )}
+                right={props => (
+                  <List.Icon color={Colors.blue500} icon="arrow-right" />
+                )}
               />
             </>
           )}
