@@ -4,12 +4,7 @@ import BASE_URL from '../config';
 
 export const warsAPI = {
   fetchCharacters: ({ pageParam = BASE_URL + 1 }) =>
-    fetch(pageParam).then(res => {
-      console.log(`param:${pageParam}`);
-      console.log(pageParam);
-      console.log(`res:${res}`);
-      return res.json();
-    }),
+    fetch(pageParam).then(res => res.json()),
 };
 
 export default warsAPI;

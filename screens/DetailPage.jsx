@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React from 'react';
 import type { Node } from 'react';
 import {
@@ -16,6 +8,7 @@ import {
   Text,
   useColorScheme,
   View,
+  FlatList,
 } from 'react-native';
 
 import { useQuery } from 'react-query';
@@ -23,7 +16,6 @@ import { useQuery } from 'react-query';
 import {
   Colors,
   DebugInstructions,
-  LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
@@ -53,8 +45,14 @@ const Section = ({ children, title }): Node => {
   );
 };
 
-const DetailPage: () => Node = () => {
+const DetailPage: () => Node = ({ route }) => {
   const isDarkMode = useColorScheme() === 'dark';
+  const { item } = route.params;
+  console.log('items:' + item);
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -68,20 +66,16 @@ const DetailPage: () => Node = () => {
         style={{
           backgroundColor: isDarkMode ? Colors.black : Colors.white,
         }}>
-        <Section title="Step One">
-          Edit <Text style={styles.highlight}>App.js</Text> to change this
-          screen and then come back to see your edits.
+        <Section title={item.name}>
+          <Text>{capitalizeFirstLetter(item.gender)}</Text>
         </Section>
-        <Section title="See Your Changes">
-          <ReloadInstructions />
-        </Section>
-        <Section title="Debug">
-          <DebugInstructions />
-        </Section>
-        <Section title="Learn More">
-          Read the docs to discover what to do next:
-        </Section>
-        <LearnMoreLinks />
+        <FlatList
+          data={data.pages.map(page => page.results).flat()}
+          keyExtractor={extractorKey}
+          onEndReachedThreshold={0.3}
+          onEndReached={loadMore}
+          renderItem={renderData}
+        />
       </View>
     </ScrollView>
   );

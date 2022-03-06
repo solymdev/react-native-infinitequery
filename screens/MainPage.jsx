@@ -6,29 +6,18 @@
  * @flow strict-local
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { Node } from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
   FlatList,
-  Image,
 } from 'react-native';
 
-import { useQuery, useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery } from 'react-query';
 import { List, Colors, ActivityIndicator } from 'react-native-paper';
-
-import {
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
 import warsAPI from '../api';
 
@@ -39,7 +28,6 @@ const MainPage: () => Node = ({ navigation }) => {
     useInfiniteQuery('repo', warsAPI.fetchCharacters, {
       getNextPageParam: lastPage => {
         if (lastPage.next !== null) {
-          console.log('next:' + lastPage.next);
           return lastPage.next;
         }
         return lastPage;
@@ -51,7 +39,6 @@ const MainPage: () => Node = ({ navigation }) => {
   };
 
   const loadMore = () => {
-    console.log('toload...');
     if (hasNextPage) {
       fetchNextPage();
     }
@@ -59,7 +46,7 @@ const MainPage: () => Node = ({ navigation }) => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center' }}>
+      <View style={styles.loadIndicatorBox}>
         <ActivityIndicator />
       </View>
     );
@@ -73,7 +60,18 @@ const MainPage: () => Node = ({ navigation }) => {
     return <ActivityIndicator />;
   };
 
-  console.log('data;' + Object.keys(data));
+  const renderData = item => {
+    return (
+      <List.Item
+        button
+        title={item.item.name}
+        onPress={() => navigation.navigate('Detail', { item: item.item })}
+        ListFooterComponent={isFetchingNextPage ? renderSpinner : null}
+        left={props => <List.Icon color={Colors.blue500} icon="account" />}
+        right={props => <List.Icon color={Colors.blue500} icon="arrow-right" />}
+      />
+    );
+  };
 
   return (
     <>
@@ -87,22 +85,7 @@ const MainPage: () => Node = ({ navigation }) => {
           keyExtractor={extractorKey}
           onEndReachedThreshold={0.3}
           onEndReached={loadMore}
-          renderItem={({ item }) => (
-            <>
-              <List.Item
-                button
-                title={item.name}
-                onPress={() => navigation.navigate('Detail')}
-                ListFooterComponent={isFetchingNextPage ? renderSpinner : null}
-                left={props => (
-                  <List.Icon color={Colors.blue500} icon="account" />
-                )}
-                right={props => (
-                  <List.Icon color={Colors.blue500} icon="arrow-right" />
-                )}
-              />
-            </>
-          )}
+          renderItem={renderData}
         />
       </View>
     </>
@@ -127,5 +110,9 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  loadIndicatorBox: {
+    flex: 1,
+    justifyContent: 'center',
   },
 });
