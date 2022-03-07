@@ -1,7 +1,6 @@
 /* eslint-disable react/function-component-definition */
 import React from 'react';
 import {
-  ScrollView,
   StyleSheet,
   Text,
   useColorScheme,
@@ -9,9 +8,7 @@ import {
   FlatList,
 } from 'react-native';
 
-import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen';
+import { List, Colors, Button } from 'react-native-paper';
 
 interface Props {
   children: any;
@@ -20,8 +17,16 @@ interface Props {
 
 const styles = StyleSheet.create({
   sectionContainer: {
-    marginTop: 32,
+    marginTop: 9,
     paddingHorizontal: 24,
+    marginBottom: 16,
+  },
+  itemContainer: {
+    marginTop: 8,
+    paddingHorizontal: 16,
+  },
+  list: {
+    marginBottom: 24,
   },
   sectionTitle: {
     fontSize: 24,
@@ -55,7 +60,7 @@ function Section({ children, title } : Props) {
         style={[
           styles.sectionDescription,
           {
-            color: isDarkMode ? Colors.light : Colors.dark,
+            color: isDarkMode ? Colors.white : Colors.black,
           },
         ]}
       >
@@ -65,11 +70,12 @@ function Section({ children, title } : Props) {
   );
 }
 
-interface Route{
+interface PropsDetailPage{
+  navigation: any;
   route: any;
 }
 
-function DetailPage({ route } : Route) {
+function DetailPage({ navigation, route } : PropsDetailPage) {
   const isDarkMode = useColorScheme() === 'dark';
   const { item } = route.params;
 
@@ -77,32 +83,47 @@ function DetailPage({ route } : Route) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  function prettifyText(string) {
+    if (string instanceof Array) {
+      if (string.length === 0) {
+        return '0';
+      }
+      return string.length;
+    }
+    const replace = string.replace('_', ' ');
+    return string.charAt(0).toUpperCase() + replace.slice(1);
+  }
+
+  const extractorKey = (index) => index.toString();
+
+  const renderData = (itemList) => (
+    <List.Item
+      title={prettifyText(itemList.item)}
+      description={prettifyText(item[itemList.item])}
+      style={styles.itemContainer}
+    />
+  );
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={backgroundStyle}
+    <View
+      style={{
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      }}
     >
-      <View
-        style={{
-          backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        }}
-      >
-        <Section title={item.name}>
-          <Text>{capitalizeFirstLetter(item.gender)}</Text>
-        </Section>
-        <FlatList
-          data={data.pages.map((page) => page.results).flat()}
-          keyExtractor={extractorKey}
-          onEndReachedThreshold={0.3}
-          onEndReached={loadMore}
-          renderItem={renderData}
-        />
-      </View>
-    </ScrollView>
+      <Button onPress={() => navigation.goBack()}>
+        <Text>Go back</Text>
+      </Button>
+      <Section title={item.name}>
+        <Text>{capitalizeFirstLetter(item.gender)}</Text>
+      </Section>
+      <FlatList
+        data={Object.keys(item)}
+        keyExtractor={extractorKey}
+        onEndReachedThreshold={0.3}
+        renderItem={renderData}
+        style={styles.list}
+      />
+    </View>
   );
 }
 

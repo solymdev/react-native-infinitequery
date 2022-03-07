@@ -48,12 +48,8 @@ const styles = StyleSheet.create({
   },
 });
 
-function LeftItem() {
-  return <List.Icon color={Colors.blue500} icon="account" />;
-}
-
 function RightItem() {
-  return <List.Icon color={Colors.blue500} icon="arrow-right" />;
+  return <List.Icon color={Colors.blue500} icon="account" />;
 }
 
 function MainPage({ navigation }: Navigation) {
@@ -70,6 +66,10 @@ function MainPage({ navigation }: Navigation) {
   });
 
   const extractorKey = (item, index) => index.toString();
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   const loadMore = () => {
     if (hasNextPage) {
@@ -90,20 +90,20 @@ function MainPage({ navigation }: Navigation) {
   const renderData = (item) => (
     <List.Item
       title={item.item.name}
+      description={capitalizeFirstLetter(item.item.gender)}
       onPress={() => navigation.navigate('Detail', { item: item.item })}
       ListFooterComponent={isFetchingNextPage ? renderSpinner : null}
-      left={() => LeftItem()}
       right={() => RightItem()}
     />
   );
+
+  const backgroundColor = isDarkMode ? Colors.black : Colors.white;
 
   return (
     <>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <View
-        style={{
-          backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        }}
+        style={{ backgroundColor }}
       >
         <FlatList
           data={data.pages.map((page) => page.results).flat()}
