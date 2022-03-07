@@ -7,40 +7,16 @@
  */
 
 import React from 'react';
-import type { Node } from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
-import MainPage from './screens/MainPage';
-import DetailPage from './screens/DetailPage';
-import { NavigationContainer } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { createStackNavigator } from '@react-navigation/stack';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import DetailPage from './screens/DetailPage';
+import MainPage from './screens/MainPage';
 
 const queryClient = new QueryClient();
 const Stack = createStackNavigator();
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
@@ -51,25 +27,6 @@ const App: () => Node = () => {
       </NavigationContainer>
     </QueryClientProvider>
   );
-};
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+}
 
 export default App;
